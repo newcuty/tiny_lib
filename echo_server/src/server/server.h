@@ -1,20 +1,20 @@
-#include <sys/types.h>          /* See NOTES */
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <cstring>
-#include <iostream>
+// #include <sys/types.h>          /* See NOTES */
+// #include <sys/socket.h>
+// #include <arpa/inet.h>
+// #include <cstring>
+// #include <iostream>
 
 
-namespace tiny{
+// namespace tiny{
 
-class Socket{
+// class Socket{
 
-    //need a 
-    explicit Socket();
-
-
-};
+//     //need a 
+//     explicit Socket();
 
 
-}
+// };
+
+
+// }
 

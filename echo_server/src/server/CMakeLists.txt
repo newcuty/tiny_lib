@@ -10,4 +10,4 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(server_compile_files server.cpp)
 
 add_executable(echo_server ${server_compile_files})
-target_link_libraries(echo_server tiny_socket)
+target_link_libraries(echo_server tiny_socket pthread)
