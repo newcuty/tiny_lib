@@ -5,7 +5,7 @@ namespace tiny_lib::net{
 Socket::Socket(/*sa_family_t& family,*/ bool isBlocking){
 
     //create a block socket
-    if (isBlocking == false){
+    if (isBlocking == true){
         socketfd_ = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
     }else{  //create a block socket
         socketfd_ = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
@@ -17,6 +17,19 @@ Socket::Socket(/*sa_family_t& family,*/ bool isBlocking){
 
     std::cout << "init socket success\n";
 }
+
+Socket::Socket(socket_fd_t& fd){
+
+    if(-1 != fd){
+        std::cout << "socket create error\n";
+        socketfd_ = -1;
+
+        return;
+    }
+
+    socketfd_ = fd;
+}
+
 Socket::~Socket(){
 
     if (-1 != socketfd_ ){
@@ -32,12 +45,22 @@ void Socket::Bind(tiny_lib::InetAddress& inet_address){
     int bindret = bind(socketfd_, inet_address.GetSockAddrType(), inet_address.GetAddrLen());
 
     if(-1 == bindret){
-        std::cout << "bind address error";
+        perror("bind address error\n");
+        return;
     }
 
     std::cout << "bind socket success\n";
 }
 
+void Socket::SetNonBlocking(){
+
+    //set the socket fd as non-blocking fd
+    int fcnret = fcntl(socketfd_, F_SETFL, fcntl(socketfd_, F_GETFL) | O_NONBLOCK);
+    if(-1 == fcnret){
+
+        std::cout << "fcntl set non-blocking fd error\n";
+    }
+}
 
 void Socket::Listen(){
 
@@ -65,14 +88,13 @@ tiny_lib::socket_fd_t Socket::Accept(tiny_lib::InetAddress& inet_address){
     return client_fd;
 }
 
-
 void Socket::Connect(tiny_lib::InetAddress& inet_address){
 
     int connect_ret = connect(socketfd_, inet_address.GetSockAddrType(), inet_address.GetAddrLen());
-    if (-1 == connect_ret){
 
-        std::cout << "connect error \n";
-        return;
+    if (-1 == connect_ret){
+        perror("connect error");
+        exit(0);
     }
 
     std::cout << "connect success\n";
@@ -80,5 +102,21 @@ void Socket::Connect(tiny_lib::InetAddress& inet_address){
     return;
 }
 
+void Socket::SetFdOvertime(struct timeval& tv){
+
+    int setopt_ret = setsockopt(socketfd_, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+    if(-1 == setopt_ret){
+
+        perror("setsockopt error");
+        return;
+    }
+
+    std::cout << "setsockopt success\n";
+}
+
+
+void Socket::Close(){
+    close(socketfd_);
+}
 
 }
