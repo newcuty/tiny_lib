@@ -21,7 +21,20 @@ class Socket{
 public:
     //initialize a socket, should support ipv4 and ipv6(update later), also support block and non-block
     explicit Socket(/*sa_family_t& family,*/  bool isBlocking = false);
-    explicit Socket(socket_fd_t& fd);
+
+    //initialize a socket with a normal socket fd
+    explicit Socket(socket_fd_t& fd);   
+
+    //initialize a socket with other socket
+    explicit Socket(const Socket& socket);  
+
+    //override a operate=, use right value to reduce the memory copy operation, 
+    Socket& operator=(const Socket&& socket);
+
+    //set current socket
+    void SetSocket(socket_fd_t fd);
+
+    //deconstruct for socket  
     virtual ~Socket();
 
     //bind a the socket to address
@@ -31,7 +44,7 @@ public:
     void Listen();
 
     //Accept the client to connect
-    tiny_lib::socket_fd_t Accept(tiny_lib::InetAddress& inet_address);
+    Socket& Accept(tiny_lib::InetAddress& inet_address);
 
     //connect to the server
     void Connect(tiny_lib::InetAddress& inet_address);

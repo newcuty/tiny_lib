@@ -30,6 +30,24 @@ Socket::Socket(socket_fd_t& fd){
     socketfd_ = fd;
 }
 
+Socket::Socket(const Socket& socket){
+
+    socketfd_ = socket.socketfd_;
+
+} 
+
+Socket& Socket::operator=(const Socket&& socket){
+
+    socketfd_ = socket.socketfd_;
+    return *this;
+
+}
+
+void Socket::SetSocket(socket_fd_t fd){
+    socketfd_ = fd;
+}
+
+
 Socket::~Socket(){
 
     if (-1 != socketfd_ ){
@@ -74,18 +92,18 @@ void Socket::Listen(){
 }
 
 
-tiny_lib::socket_fd_t Socket::Accept(tiny_lib::InetAddress& inet_address){
+Socket& Socket::Accept(tiny_lib::InetAddress& inet_address){
 
     //accept will return a socket fd for client
     tiny_lib::socket_fd_t client_fd = accept(socketfd_, inet_address.GetSockAddrType(), &inet_address.GetAddrLen());
 
     if(-1 == client_fd){
         std::cout << "accept error";
-        return -1;
+        exit(0);
     }
 
-
-    return client_fd;
+    Socket clent_socket(client_fd);
+    return clent_socket;
 }
 
 void Socket::Connect(tiny_lib::InetAddress& inet_address){
