@@ -11,10 +11,10 @@ int main(int argc, char** argv){
     tiny_lib::net::Socket client_socket(true);
 
     //set overtime,because the socket is nonblocking
-    // struct timeval tv;
-    // tv.tv_sec = 1;
-    // tv.tv_usec = 0;
-    // client_socket.SetFdOvertime(tv);
+    struct timeval tv;
+    tv.tv_sec = 5;
+    tv.tv_usec = 0;
+    client_socket.SetFdOvertime(tv);
 
     std::string ipaddr("127.0.0.1"); 
     tiny_lib::uint16_t port = 8888;
@@ -22,8 +22,9 @@ int main(int argc, char** argv){
     //client_socket.Bind(server_address);
 
     client_socket.Connect(server_address);
+    client_socket.SetNonBlocking();
 
-        while(true){
+    while(true){
         char buf[buf_size];  //在这个版本，buf大小必须大于或等于服务器端buf大小，不然会出错，想想为什么？
         bzero(&buf, sizeof(buf));
         //scanf("%s", buf);
